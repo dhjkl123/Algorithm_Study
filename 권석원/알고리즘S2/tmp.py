@@ -1,24 +1,46 @@
-def solution(N, number):
-    answer = 0
-    
-    d = [set() for i in range(8)]
-    
-    for i in range(1,8):
-        d[i].add(int(str(N)*i))
-        for j in range(i//2 +1): # i에다가 j의 경우에서 일어날 수 있는 모든 경우 사칙연산
-            for f in d[j]:
-                for s in d[i-j]:
-                    d[i].add(f+s)
-                    d[i].add(f-s)
-                    d[i].add(s-f)
-                    d[i].add(f*s)
-                    if s != 0 : d[i].add(f//s)
-                    if f != 0 : d[i].add(s//f)
-        if number in d[i]:
-            return i
-    
-    return -1
+import copy
 
-N, number = map(int,input().split())
+dx = [
+    [0,1,2,3],[0,0,0,0], # -
+    [0,1,0,1],                                  # 네모
+    [0,-1,0,1],[0,-1,0,1],[0,0,-1,0],[0,0,1,0], # ㅗ
+    [0,0,1,1],[0,-1,-1,-2],[0,1,1,2],[0,0,-1,-1], # ㄹ
+    [0,0,0,1],[0,0,1,2],[0,0,-1,-2],[0,1,1,1], # ㄴ
+    [0,1,1,1],[0,0,1,2],[0,-1,-1,-1],[-1,0,1,1] # ㄱ
+]
 
-print(solution(N,number))
+dy = [
+    [0,0,0,0],[0,1,2,3],
+    [0,0,1,1],
+    [0,0,-1,0],[0,0,1,0],[0,-1,0,1],[0,-1,0,1],
+    [0,1,1,2],[0,0,-1,-1],[0,0,-1,-1],[0,1,1,2],
+    [0,-1,-2,-2],[1,0,0,0],[0,1,1,1],[0,0,1,2],
+    [0,0,-1,-2],[0,1,1,1],[0,0,-1,-2],[0,0,0,1]
+]
+
+
+map_list = [[0] * 4 for _ in range(4)]
+
+
+for k in range(19):
+    conti_flag = False
+    for i in range(4):
+        for j in range(4):
+            if not conti_flag:
+                flag = True
+                tmp_list = copy.deepcopy(map_list)
+                for n in range(4):
+                    nx = j + dx[k][n]
+                    ny = i + dy[k][n]
+
+                    if nx < 0 or nx >= 4 or ny < 0 or ny >= 4:
+                        flag = False
+                        break
+
+                    tmp_list[ny][nx] = 1
+                if flag:
+                    print(k)
+                    conti_flag = True
+                    for tmp in tmp_list:
+                        print(tmp)
+                    print()
